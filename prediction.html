@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results - LungPredict</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 25%, #415a77 50%, #778da9 75%, #0d1b2a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="grad" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" /><stop offset="100%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:0" /></radialGradient></defs><circle cx="20" cy="20" r="3" fill="url(%23grad)"/><circle cx="80" cy="80" r="3" fill="url(%23grad)"/><circle cx="50" cy="50" r="2" fill="url(%23grad)"/><circle cx="70" cy="30" r="2" fill="url(%23grad)"/><circle cx="30" cy="70" r="2" fill="url(%23grad)"/></svg>');
+            z-index: 0;
+            opacity: 0.8;
+        }
+        
+        .main-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .prediction-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .result-badge {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .confidence-bar {
+            height: 24px;
+            border-radius: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .confidence-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+        }
+        
+        .precautions-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 5px solid #4CAF50;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .precaution-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4CAF50;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .precaution-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .precaution-icon {
+            font-size: 1.8rem;
+            margin-right: 10px;
+            display: inline-block;
+            min-width: 40px;
+        }
+        
+        .precaution-content {
+            display: inline-block;
+            width: calc(100% - 50px);
+            vertical-align: top;
+        }
+        
+        .precaution-title {
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        
+        .precaution-description {
+            font-size: 0.95rem;
+            color: #d0d0d0;
+        }
+        
+        .goal-badge {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .btn {
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #8BC34A 0%, #7CB342 100%);
+            border: none;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #7CB342 0%, #689F38 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 195, 74, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-content">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="prediction-card p-5 text-center">
+                    <h2 class="mb-4"><i class="bi bi-clipboard-check text-success me-2"></i>Prediction Results</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h4>Patient Details</h4>
+                            <p><strong>Name:</strong> {{ name }}</p>
+                            <p><strong>Age:</strong> {{ age }}</p>
+                            <p><strong>Gender:</strong> {{ gender }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>X-Ray Image</h4>
+                            <img src="{{ image_url }}" class="img-fluid rounded" style="border: 2px solid rgba(255, 255, 255, 0.1);" alt="X-Ray Image">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>Prediction Outcome</h4>
+                            {% if prediction == 'Positive' %}
+                            <span class="badge bg-danger result-badge">{{ disease_name }} Detected</span>
+                            {% else %}
+                            <span class="badge bg-success result-badge">No Abnormalities Detected</span>
+                            {% endif %}
+                            
+                            <!-- Added Confidence Score -->
+                            <div class="mt-3">
+                                <h5>Confidence Score: {{ confidence }}</h5>
+                                <div class="confidence-bar">
+                                    <div class="confidence-progress" style="width: {{ confidence.replace('%', '') }}%"></div>
+                                </div>
+                                <small class="text-light mt-2 d-block">Higher confidence indicates greater certainty in the prediction</small>
+                            </div>
+                            <!-- Explanation / Reason why the model predicted this -->
+                            <div class="mt-4 text-start">
+                                <h5>Why the model predicted this</h5>
+                                <p class="mb-2">{{ explanation_text }}</p>
+                                <!-- Feature-level breakdown based on known radiological patterns -->
+                                {% if explanation_features %}
+                                <div class="table-responsive text-light">
+                                    <table class="table table-sm table-borderless" style="color: #f8f9fa;">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width:40%">Lung Fields</th>
+                                                <td>{{ explanation_features.get('Lung Fields') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Distribution</th>
+                                                <td>{{ explanation_features.get('Distribution') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Opacity Type</th>
+                                                <td>{{ explanation_features.get('Opacity Type') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Pleural Effusion</th>
+                                                <td>{{ explanation_features.get('Pleural Effusion') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Borders</th>
+                                                <td>{{ explanation_features.get('Borders') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Symmetry</th>
+                                                <td>{{ explanation_features.get('Symmetry') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Texture</th>
+                                                <td>{{ explanation_features.get('Texture') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>AI Focus Area</th>
+                                                <td>{{ explanation_features.get('AI Focus Area') }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% endif %}
+                                {% if disease_name and confidence %}
+                                <small class="text-light">Shown probability is for <strong>{{ disease_name }}</strong> ({{ confidence }}).</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Precautions Section -->
+                    {% if precautions %}
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="precautions-section">
+                                <h3 class="mb-3" style="color: #4CAF50;">{{ precautions.title }}</h3>
+                                
+                                <div class="goal-badge">
+                                    <strong>🎯 Goal:</strong> {{ precautions.goal }}
+                                </div>
+                                
+                                <h5 class="mb-3">🔝 Top 5 Precautions:</h5>
+                                
+                                {% for precaution in precautions.precautions %}
+                                <div class="precaution-item">
+                                    <div class="precaution-icon">{{ precaution.icon }}</div>
+                                    <div class="precaution-content">
+                                        <div class="precaution-title">{{ precaution.title }}</div>
+                                        <div class="precaution-description">{{ precaution.description }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <p class="text-warning">⚠️ Precautions data not available</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <p class="text-warning">
+                                <strong>Disclaimer:</strong> This is an AI-assisted prediction. Always consult a healthcare professional for a definitive diagnosis.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <a href="/" class="btn btn-primary">Return to Home</a>
+                            <button class="btn btn-success ms-2" onclick="downloadReport()">
+                                <i class="bi bi-file-pdf"></i> Download PDF Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            function downloadReport() {
+                // Gather all prediction data
+                const reportData = {
+                    name: '{{ name }}',
+                    age: '{{ age }}',
+                    gender: '{{ gender }}',
+                    disease_name: '{{ disease_name }}',
+                    confidence: '{{ confidence }}',
+                    prediction_result: '{{ prediction }}',
+                    explanation_text: '{{ explanation_text | safe }}',
+                    precautions: {{ precautions | tojson | safe }}
+                };
+            
+                // Send POST request to download PDF
+                fetch('/download_report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(reportData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Create a temporary URL for the blob
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `LungPrediction_Report_${new Date().getTime()}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Error downloading report:', error);
+                    alert('Error generating PDF report. Please try again.');
+                });
+            }
+        </script>
+</body>
+</html>
