@@ -13,8 +13,8 @@ This is a Flask web application for lung disease detection using X-ray images. T
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/PranavsinhRajput/Lungs-Diseases-detection-using-Transfer-learning
-cd your-repo-name
+git clone https://github.com/Spidey017/LUNG-DISEASE-DETECTION-USING-MACHINE-LEARNING
+cd your-repo-name 
 ```
 
 ### 2. Install Virtual Environment
