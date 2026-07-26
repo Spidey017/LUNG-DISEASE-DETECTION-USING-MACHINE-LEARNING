@@ -1,6 +1,6 @@
 # Lung Disease Detection Web App
 
-This is a Flask web application for lung disease detection using X-ray images. The app uses a pre-trained deep learning model to classify images of lungs and determine if the individual has a respiratory condition.
+This is a Web application for lung disease detection using X-ray images. The app uses a pre-trained deep learning model to classify images of lungs and determine if the individual has a respiratory condition.
 
 ## Features
 - Upload chest X-ray images for lung disease classification.
