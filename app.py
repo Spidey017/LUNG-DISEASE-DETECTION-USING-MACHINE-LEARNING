@@ -169,16 +169,16 @@ def get_prediction_reason(predicted_index, probs, class_labels=None):
     return {'text': explanation, 'features': features}
 
 # Hard-coded admin credentials
-ADMIN_USERNAME = "vsm"
-ADMIN_PASSWORD = "aiml"
+ADMIN_USERNAME = "your-username"
+ADMIN_PASSWORD = "your-password"
 
 # PostgreSQL Database Configuration
 # Replace these with your actual database credentials
 DB_HOST = "localhost"
 DB_PORT = "5432"
 DB_NAME = "lungdisease"
-DB_USER = "postgres"
-DB_PASSWORD = "arman"
+DB_USER = "your-DB-username"
+DB_PASSWORD = "your-DB-password"
 
 # Create connection pool
 try:
